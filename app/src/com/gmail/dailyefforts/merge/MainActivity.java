@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -102,12 +105,19 @@ public class MainActivity extends Activity {
         newNum();
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @Override
     protected void onPause() {
         super.onPause();
         final long max = mSharedPrefs.getLong(MAX_SCORE, 0L);
         if (max < mMaxScore) {
             mSharedPrefs.edit().putLong(MAX_SCORE, mMaxScore).commit();
+            final Editor editor = mSharedPrefs.edit();
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD) {
+                editor.putLong(MAX_SCORE, mMaxScore).apply();
+            } else {
+                editor.putLong(MAX_SCORE, mMaxScore).commit();
+            }
         }
     }
 
